@@ -5,30 +5,13 @@ using UnityEngine;
 public class Wall : MonoBehaviour, IHitable {
 	[SerializeField] private WallType myWallType;
 
-	public WallType WallType { get => myWallType; internal set => myWallType = value; }
+	public WallType WallType { get => myWallType; }
 
-	public void OnGetHit (Bullet bullet) {
-		switch (WallType) {
-			case WallType.Steel: {
-				if (bullet.BulletPower != BulletPower.Normal) goto default;
-				else bullet.Destroy ();
-			}
-			break;
-			case WallType.Tree: {
-				if (bullet.BulletPower == BulletPower.Extended) goto default;
-			}
-			break;
-			case WallType.Brick:
-			default: {
-				bullet.Destroy ();
-				GameObject.Destroy (gameObject);
-			}
-			break;
-		}
+	public bool OnGetHit (Bullet bullet) {
+		if (myWallType == WallType.Tree && bullet.BulletPower != BulletPower.Forced) return false;
+		if (myWallType == WallType.Steel && bullet.BulletPower == BulletPower.Normal) return true;
+
+		gameObject.SetActive (false);
+		return true;
 	}
-}
-public enum WallType {
-	Brick,
-	Steel,
-	Tree
 }

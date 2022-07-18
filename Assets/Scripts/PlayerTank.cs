@@ -2,20 +2,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : Tank {
-	private int starsCollected = 0;
+public class PlayerTank : Tank {
+	private int myStarsCollected = 0;
 
 	protected override void Start () {
 		base.Start ();
-		mySide = Side.Player;
+		_Side = Side.Player;
 	}
 
 	protected override void Update () {
+		CheckInput ();
+
+		base.Update ();
+	}
+
+	private void CheckInput () {
 		//if (!Input.anyKey) return;
-		// Использовать глобальную привязки клавиш для направления движения
+
 		myMoveDirection = Vector2.zero;
 
-		if (Input.GetKey (KeyCode.W)) {
+		myMoveDirection.x = Input.GetAxis ("Horizontal");
+		myMoveDirection.y = myMoveDirection.x == 0 ? Input.GetAxis ("Vertical") : 0;
+
+		/*if (Input.GetKey (KeyCode.W)) {
 			myMoveDirection = Vector2.up;
 		} else if (Input.GetKey (KeyCode.S)) {
 			myMoveDirection = Vector2.down;
@@ -23,24 +32,22 @@ public class PlayerController : Tank {
 			myMoveDirection = Vector2.left;
 		} else if (Input.GetKey (KeyCode.D)) {
 			myMoveDirection = Vector2.right;
-		}
-
-		base.Update ();
+		}*/
 
 		if (Input.GetKeyDown (KeyCode.Space)) {
 			Shoot ();
 		}
 	}
 
-	internal void OnTakeStar () {
-		starsCollected++;
-		if (starsCollected > 3) {
+	public void OnTakeStar () {
+		myStarsCollected++;
+		if (myStarsCollected > 3) {
 			myGunPower = BulletPower.Extended;
 		}
 	}
 
-	internal override void Destroy () {
-		GameController.OnPlayerKilled ();
+	public override void Destroy () {
+		InitContainer.instance.PlayerService.OnPlayerKilled ();
 		base.Destroy ();
 	}
 }

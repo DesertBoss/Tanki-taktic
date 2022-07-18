@@ -1,17 +1,39 @@
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class BonusController : MonoBehaviour {
+	[SerializeField] GameObject[] _BonusPrefabs;
+
 	List<Effect> myEffects;
 	Effect myEffectInOrder;
 
-	void Start () {
+	void Awake () {
 		myEffects = new List<Effect> ();
 		myEffectInOrder = null;
 	}
 
+	private void OnDestroy () {
+		_BonusPrefabs = null;
+		myEffectInOrder = null;
+		myEffects.Clear ();
+		myEffects = null;
+	}
+
+	void Start () {
+		
+	}
+
 	void FixedUpdate () {
+		UpdateEffects ();
+		CheckOrder ();
+	}
+
+	void Update () {
+
+	}
+
+	private void UpdateEffects () {
 		for (int i = 0; i < myEffects.Count; i++) {
 			Effect effect = myEffects[i];
 			if (myEffectInOrder != null && myEffectInOrder.BonusType == effect.BonusType)
@@ -25,7 +47,9 @@ public class BonusController : MonoBehaviour {
 
 			effect.Update (Time.fixedDeltaTime);
 		}
+	}
 
+	private void CheckOrder () {
 		if (myEffectInOrder != null) {
 			myEffectInOrder.Start ();
 			myEffects.Add (myEffectInOrder);
@@ -33,71 +57,12 @@ public class BonusController : MonoBehaviour {
 		}
 	}
 
-	void Update () {
-
-	}
-
-	public void OnTakeBonus (Tank owner, BonusType bonus) {
-		Effect effect = null;
-
-		switch (bonus) {
-			case BonusType.Helmet:
-			effect = new HalmetEffect (owner);
-			break;
-			case BonusType.Watch:
-			effect = new WatchEffect (this);
-			break;
-			case BonusType.Shovel:
-			effect = new ShovelEffect (this);
-			break;
-			case BonusType.Star:
-			effect = new StarEffect (owner);
-			break;
-			case BonusType.Grenade:
-			effect = new GrenadeEffect (this);
-			break;
-			case BonusType.ExtraLife:
-			effect = new ExtraLifeEffect ();
-			break;
-			case BonusType.Pistol:
-			effect = new PistolEffect (owner);
-			break;
-			case BonusType.None:
-			default: return;
-		}
-
+	public void OnTakeBonus (Effect effect) 
+	{
 		myEffectInOrder = effect;
 	}
 
-	public void OnTakeBonus (Tank owner, BonusType bonus, float duration) {
-		Effect effect = null;
-
-		switch (bonus) {
-			case BonusType.Helmet:
-			effect = new HalmetEffect (owner, duration);
-			break;
-			case BonusType.Watch:
-			effect = new WatchEffect (this, duration);
-			break;
-			case BonusType.Shovel:
-			effect = new ShovelEffect (this, duration);
-			break;
-			case BonusType.Star:
-			effect = new StarEffect (owner);
-			break;
-			case BonusType.Grenade:
-			effect = new GrenadeEffect (this);
-			break;
-			case BonusType.ExtraLife:
-			effect = new ExtraLifeEffect ();
-			break;
-			case BonusType.Pistol:
-			effect = new PistolEffect (owner, duration);
-			break;
-			case BonusType.None:
-			default: return;
-		}
-
-		myEffectInOrder = effect;
+	public void SpawnRandomBonus (Vector3 position) {
+		Instantiate (_BonusPrefabs[Random.Range (0, _BonusPrefabs.Length)], position, Quaternion.identity, transform);
 	}
 }

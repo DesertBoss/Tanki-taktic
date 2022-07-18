@@ -5,16 +5,22 @@ using UnityEngine;
 public class Spawner : MonoBehaviour
 {
 	[SerializeField] private Side mySide = Side.Enemy;
-	private GameController myGameController;
-	private GameObject mySpawnerLight;
+	[SerializeField] private GameObject mySpawnerLightPrefab;
 	
 	public Side Side { get => mySide; internal set => mySide = value; }
-    
-    void Start()
-    {
-		myGameController = transform.root.GetComponent <GameController> ();
 
-		mySpawnerLight = Resources.Load<GameObject> ("Prefabs/SpawnLight");
+
+	private void Awake () {
+		
+	}
+
+	private void OnDestroy () {
+		mySpawnerLightPrefab = null;
+	}
+
+	void Start()
+    {
+		
 	}
 
     
@@ -23,32 +29,32 @@ public class Spawner : MonoBehaviour
         
     }
 
-	internal void Spawn (GameObject prefab) {
+	public void Spawn (GameObject prefab, Transform parrent) {
 		switch (mySide) {
 			case Side.Player:
-			StartCoroutine (SpawnPlayer (prefab));
+			StartCoroutine (SpawnPlayer (prefab, parrent));
 			break;
 			case Side.Enemy:
-			StartCoroutine (SpawnEnemy (prefab));
+			StartCoroutine (SpawnEnemy (prefab, parrent));
 			break;
 		}
 	}
 
-	private IEnumerator SpawnPlayer (GameObject prefab) {
-		GameObject.Instantiate (mySpawnerLight, transform);
+	private IEnumerator SpawnPlayer (GameObject prefab, Transform parrent) {
+		GameObject.Instantiate (mySpawnerLightPrefab, transform);
 		yield return new WaitForSeconds (1.3f);
 
-		GameObject t = GameObject.Instantiate (prefab, transform.position, Quaternion.identity);
-		t.transform.SetParent (myGameController.transform, true);
+		Tank tank = GameObject.Instantiate (prefab, transform.position, Quaternion.identity, parrent).GetComponent<Tank> ();
+		//t.transform.SetParent (_TanksContainer, true);
 
-		myGameController.BonusController.GetComponent<BonusController> ().OnTakeBonus (t.GetComponent<Tank> (), BonusType.Helmet, 3);
+		InitContainer.instance.BonusController.OnTakeBonus (new HalmetEffect (tank, 3));
 	}
 
-	private IEnumerator SpawnEnemy (GameObject prefab) {
-		GameObject.Instantiate (mySpawnerLight, transform);
+	private IEnumerator SpawnEnemy (GameObject prefab, Transform parrent) {
+		GameObject.Instantiate (mySpawnerLightPrefab, transform);
 		yield return new WaitForSeconds (1.3f);
 
-		GameObject t = GameObject.Instantiate (prefab, transform.position, Quaternion.identity);
-		t.transform.SetParent (myGameController.EnemyTanks, true);
+		GameObject.Instantiate (prefab, transform.position, Quaternion.identity, parrent);
+		//t.transform.SetParent (_TanksContainer, true);
 	}
 }

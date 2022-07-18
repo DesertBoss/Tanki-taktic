@@ -1,14 +1,14 @@
 ﻿using UnityEngine;
 
 public class PistolEffect : Effect {
-	private PlayerController myOwner;
+	private PlayerTank myOwner;
 	private BulletPower myInitPower;
 
 	private float myInitTime = 10;
 	private float myRemainingTime;
 
 	public PistolEffect (Tank owner) : base (BonusType.Star) {
-		myOwner = owner as PlayerController;
+		myOwner = owner as PlayerTank;
 		myRemainingTime = myInitTime;
 	}
 
@@ -17,10 +17,10 @@ public class PistolEffect : Effect {
 	}
 
 	public override void Start () {
-		if (myOwner != null) {
-			myInitPower = myOwner.GunPower;
-			myOwner.GunPower = BulletPower.Extended;
-		}
+		if (myOwner == null) return;
+
+		myInitPower = myOwner.GunPower;
+		myOwner.GunPower = BulletPower.Forced;
 	}
 
 	public override void Update (float delta) {
@@ -31,6 +31,7 @@ public class PistolEffect : Effect {
 
 	public override void OnDestroy () {
 		if (myOwner == null) return;
+
 		myOwner.GunPower = myInitPower;
 		myOwner = null;
 	}

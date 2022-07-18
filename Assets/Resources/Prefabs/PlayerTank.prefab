@@ -140,7 +140,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8339903225377728254}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.5, y: 2.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 8339903224902557397}
@@ -226,7 +226,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1501dd011c81cc04787e3f44c88b4c42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myHealth: 1
-  mySpeed: 15
-  myBulletSpeed: 10
-  myMaxBullets: 1
+  _Health: 1
+  _Speed: 15
+  _SpeedMult: 500
+  _BulletSpeed: 10
+  _BulletSpeedMult: 20
+  _MaxBullets: 1
+  _Side: 0
+  _Gun: {fileID: 8339903225196080954}
+  _ExplosionPrefab: {fileID: 7968321525616445444, guid: 2e46ac480ff56ca43b56b9a99596b28b, type: 3}

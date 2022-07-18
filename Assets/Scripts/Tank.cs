@@ -3,105 +3,109 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D),typeof(Animator))]
 public class Tank : MonoBehaviour, IHitable {
-	[SerializeField] protected int myHealth = 1;
-	[SerializeField] protected int mySpeed = 10;
-	[SerializeField] protected int myBulletSpeed = 10;
-	[SerializeField] protected int myMaxBullets = 1;
+	[SerializeField] protected int _Health = 1;
+	[SerializeField] protected int _Speed = 10;
+	[SerializeField] protected int _SpeedMult = 500;
+	[SerializeField] protected int _BulletSpeed = 10;
+	[SerializeField] protected int _BulletSpeedMult = 20;
+	[SerializeField] protected int _MaxBullets = 1;
 	protected int myCurBullets = 0;
 
-	protected Side mySide = Side.Enemy;
+	[SerializeField] protected Side _Side = Side.Enemy;
 	protected BulletPower myGunPower = BulletPower.Normal;
 
-	protected Transform myGun;
-	protected Rigidbody2D myBullet;
-	protected Rigidbody2D myBody;
-
+	[SerializeField] protected Transform _Gun;
+	[SerializeField] protected GameObject _ExplosionPrefab;
+	protected BulletFactory _BulletFactory;
+	protected Rigidbody2D myRigidbody2D;
 	protected Animator myAnimator;
 
 	protected Vector2 myMoveDirection;
 	protected float myRotation;
 	
+	public int Health { get => _Health; set => _Health = value; }
+	public int Speed { get => _Speed; set => _Speed = value; }
+	public int CurBullets { get => myCurBullets; set => myCurBullets = value; }
+	public Side Side { get => _Side; set => _Side = value; }
+	public BulletPower GunPower { get => myGunPower; set => myGunPower = value; }
+	public Transform Gun { get => _Gun; }
 
-	public int Health { get => myHealth; internal set => myHealth = value; }
-	public int Speed { get => mySpeed; internal set => mySpeed = value; }
-	public int CurBullets { get => myCurBullets; internal set => myCurBullets = value; }
-	public Side Side { get => mySide; internal set => mySide = value; }
-	public BulletPower GunPower { get => myGunPower; internal set => myGunPower = value; }
-
-	protected virtual void Start () {
-		myGun = transform.Find ("Gun");
-		myBullet = Resources.Load<Rigidbody2D> ("Prefabs/Bullet");
-		myBody = GetComponent<Rigidbody2D> ();
+	protected virtual void Awake () {
+		myRigidbody2D = GetComponent<Rigidbody2D> ();
 		myAnimator = GetComponent<Animator> ();
+		_BulletFactory = InitContainer.instance.BulletFactory;
+
 		myMoveDirection = new Vector2 (0, 0);
 		myRotation = transform.rotation.z;
 
 		myAnimator.speed = 0;
 	}
 
-	protected virtual void Update () {
-		// Сделать логику вычисления угла через синус и косинус
-		if (myMoveDirection == Vector2.up) {
-			myRotation = 0;
-		} else
-		if (myMoveDirection == Vector2.left) {
-			myRotation = 90;
-		} else
-		if (myMoveDirection == Vector2.right) {
-			myRotation = -90;
-		} else
-		if (myMoveDirection == Vector2.down) {
-			myRotation = 180;
-		}
+	protected void OnDestroy () {
+		_Gun = null;
+		_ExplosionPrefab = null;
+		_BulletFactory = null;
+		myRigidbody2D = null;
+		myAnimator = null;
+	}
 
+	protected virtual void Start () {
+		
+	}
+
+	protected virtual void Update ()
+	{
+		ChangeRotation();
+		CheckMove();
+		Move();
+	}
+
+	private void ChangeRotation()
+	{
+		if (myMoveDirection == Vector2.zero) return;
+
+		myRotation = Vector2.SignedAngle (Vector2.up, myMoveDirection);
+		transform.rotation = Quaternion.Euler (0, 0, myRotation);
+	}
+
+	private void Move()
+	{
+		myRigidbody2D.AddForce (myMoveDirection * _Speed * _SpeedMult * Time.deltaTime);
+	}
+
+	private void CheckMove()
+	{
 		if (myMoveDirection != Vector2.zero)
 			myAnimator.speed = 1;
 		else
 			myAnimator.speed = 0;
-		transform.rotation = Quaternion.Euler (0, 0, myRotation);
-		myBody.AddForce (myMoveDirection * mySpeed * 500 * Time.deltaTime);
 	}
 
-	protected void Shoot () {
-		if (myCurBullets >= myMaxBullets) return;
-		Rigidbody2D bulletRigid = Instantiate(myBullet, myGun.position, transform.rotation);
-		Bullet bulletInstance = bulletRigid.GetComponent<Bullet> ();
-		bulletInstance.Owner = this;
-		bulletInstance.Side = mySide;
-		bulletInstance.BulletPower = myGunPower;
+	protected void Shoot () 
+	{
+		if (myCurBullets >= _MaxBullets) return;
 
-		bulletRigid.AddForce (myGun.TransformDirection (Vector2.up) * (myBulletSpeed * 20));
+		Bullet bullet = _BulletFactory.SpawnBullet (this, _Gun.position, transform.rotation);
+		//bullet.Owner = this;
+		bullet.Rigidbody2D.AddForce (_Gun.TransformDirection (Vector2.up) * (_BulletSpeed * _BulletSpeedMult));
+
 		myCurBullets++;
 	}
 
-	public void OnGetHit (Bullet bullet) {
-		if (bullet.Side == mySide) return;
-		myHealth--;
-		bullet.Destroy ();
-		if (myHealth <= 0) {
+	public bool OnGetHit (Bullet bullet) {
+		if (bullet.Side == _Side) return false;
+		_Health--;
+		if (_Health <= 0) {
 			Destroy ();
 		}
+		return true;
 	}
 
-	internal virtual void Destroy () {
-		Animator explosion = Instantiate (Resources.Load<Animator> ("Prefabs/Explosion"), transform.position, Quaternion.identity);
+	public virtual void Destroy () {
+		Animator explosion = Instantiate (_ExplosionPrefab, transform.position, Quaternion.identity).GetComponent<Animator>();
 		explosion.SetBool ("Small", false);
 		GameObject.Destroy (gameObject);
 	}
-
-	protected void SpawnBonus () {
-		SpawnBonus ((BonusType)Random.Range (1, 7));
-	}
-
-	protected void SpawnBonus (BonusType type) {
-		Bonus bonus = Instantiate (Resources.Load<Bonus> ("Prefabs/Bonus"), transform.position, Quaternion.identity);
-		bonus.BonusType = type;
-		bonus.GetComponent<SpriteRenderer> ().sprite = Resources.LoadAll <Sprite> ("Textures/BattleCityAtlas").Single (s => s.name == $"Bonus_{(int)type}");
-	}
-}
-
-public enum Side {
-	Player = 0,
-	Enemy = 1
 }

@@ -122,3 +122,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39cf144928642064ca368033157fe557, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _SteelWallPrefab: {fileID: 1544774127988928662, guid: 7b4295dc7fc3e634c9fc7194fad6ff7d, type: 3}
+  _BrickWallPrefab: {fileID: 4070580555056950999, guid: 150b721112b176f4abf6de3a35496105, type: 3}
+  _DestroyedSprite: {fileID: 5074016443003246541, guid: 63771e0a33f2cff4d9ba0739b86b332e, type: 3}

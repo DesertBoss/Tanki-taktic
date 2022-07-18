@@ -7,7 +7,7 @@ public class ExtraLifeEffect : Effect {
 	}
 
 	public override void Start () {
-		GameController.OnGetExtraLife ();
+		InitContainer.instance.PlayerService.OnGetExtraLife ();
 		myCompleted = true;
 	}
 }

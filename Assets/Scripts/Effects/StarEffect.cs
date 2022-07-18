@@ -1,16 +1,16 @@
 ﻿using UnityEngine;
 
 public class StarEffect : Effect {
-	private PlayerController myOwner;
+	private PlayerTank myOwner;
 
 	public StarEffect (Tank owner) : base (BonusType.Star) {
-		myOwner = owner as PlayerController;
+		myOwner = owner as PlayerTank;
 	}
 
 	public override void Start () {
 		if (myOwner != null) {
 			myOwner.OnTakeStar ();
-			myOwner.transform.root.GetComponent<GameController> ().AddScore (myOwner.transform.position, 300);
+			InitContainer.instance.PlayerService.AddScore (myOwner.transform.position, 300);
 		}
 
 		myCompleted = true;

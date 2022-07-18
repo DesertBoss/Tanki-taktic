@@ -1,3 +1,3 @@
 ﻿public interface IHitable {
-	public void OnGetHit (Bullet bullet);
+	public bool OnGetHit (Bullet bullet);
 }

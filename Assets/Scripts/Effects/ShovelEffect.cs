@@ -2,21 +2,18 @@
 using UnityEngine;
 
 public class ShovelEffect : Effect {
-	Base myBase;
-
 	private float myInitTime = 20;
 	private float myRemainingTime;
 
-	public ShovelEffect (BonusController controller) : base (BonusType.Shovel) {
-		myBase = controller.transform.root.GetComponent<GameController> ().Base.GetComponent <Base> ();
+	public ShovelEffect () : base (BonusType.Shovel) {
 		myRemainingTime = myInitTime;
 	}
-	public ShovelEffect (BonusController controller, float duration) : this (controller) {
+	public ShovelEffect (float duration) : this () {
 		myRemainingTime = duration;
 	}
 
 	public override void Start () {
-		myBase.Fortify ();
+		InitContainer.instance.Base.Fortify ();
 	}
 
 	public override void Update (float delta) {
@@ -26,7 +23,6 @@ public class ShovelEffect : Effect {
 	}
 
 	public override void OnDestroy () {
-		myBase.UnFortify ();
-		myBase = null;
+		InitContainer.instance.Base.UnFortify ();
 	}
 }

@@ -2,13 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BotController : Tank {
-	[SerializeField] private float myMinTimeToShoot = 1;
-	[SerializeField] private float myMaxTimeToShoot = 4;
-	[SerializeField] private float myMinTimeToMove = 5;
-	[SerializeField] private float myMaxTimeToMove = 10;
+public class BotTank : Tank {
+	[SerializeField] private float _MinTimeToShoot = 1;
+	[SerializeField] private float _MaxTimeToShoot = 4;
+	[SerializeField] private float _MinTimeToMove = 5;
+	[SerializeField] private float _MaxTimeToMove = 10;
 	//[SerializeField] private float myMinTimeOnMove = 4;
 	//[SerializeField] private float myMaxTimeOnMove = 8;
+	[SerializeField] private float _StuckFactor = 0.01f;
+	[SerializeField] private int _ContainBonusChance = 50;
 
 	private float myCurTimeToShoot = 2;
 	private float myCurTimeToMove = 2;
@@ -24,12 +26,12 @@ public class BotController : Tank {
 	private bool myFreezed = false;
 	private bool myContainBonus = false;
 
-	public int ScoreOnKill { get => myScoreOnKill; internal set => myScoreOnKill = value; }
+	public int ScoreOnKill { get => myScoreOnKill; set => myScoreOnKill = value; }
 
 	protected override void Start () {
 		base.Start ();
 		RandomMoveDirection ();
-		myContainBonus = Random.Range (1, 100) > 50 ? true : false;
+		myContainBonus = Random.Range (0, 100) > _ContainBonusChance ? true : false;
 		myCurPosition = transform.position;
 		myPrePosition = myCurPosition;
 		myFreezedPosition = Vector2.zero;
@@ -38,9 +40,18 @@ public class BotController : Tank {
 	private void FixedUpdate () {
 		if (myFreezed) return;
 
+		CheckShoot ();
+		CheckMove ();
+		CheckStuck ();
+	}
+
+	protected override void Update () {
+		myMoveDirection = myBotMoveDirection;
+		base.Update ();
+	}
+
+	private void CheckShoot () {
 		myCurTimeToShoot -= Time.fixedDeltaTime;
-		myCurTimeToMove -= Time.fixedDeltaTime;
-		//myCurTimeOnMove -= Time.fixedDeltaTime;
 
 		if (myCurTimeToShoot <= 0) {
 			ResetTimeToShoot ();
@@ -50,15 +61,18 @@ public class BotController : Tank {
 			ResetTimeToMove ();
 			RandomMoveDirection ();
 		}
-		/*if (myCurTimeOnMove <= 0) {
-            myCurTimeOnMove = Random.Range (myMinTimeOnMove, myMaxTimeOnMove);
-        }*/
+	}
+
+	private void CheckMove () {
+		myCurTimeToMove -= Time.fixedDeltaTime;
 
 		myPrePosition = myCurPosition;
 		myCurPosition = transform.position;
+	}
 
+	private void CheckStuck () {
 		float dist = Vector2.Distance (myPrePosition, myCurPosition);
-		if (dist < 0.01f) {
+		if (dist < _StuckFactor) {
 			myUpdatesAtStuck++;
 			if (myUpdatesAtStuck > 10) {
 				myUpdatesAtStuck = 0;
@@ -68,17 +82,13 @@ public class BotController : Tank {
 		}
 	}
 
-	protected override void Update () {
-		myMoveDirection = myBotMoveDirection;
-		base.Update ();
-	}
+	public override void Destroy () {
+		if (_Side != Side.Player && myScoreOnKill > 0)
+			InitContainer.instance.PlayerService.AddScore (transform.position, myScoreOnKill);
+		if (myContainBonus) 
+			InitContainer.instance.BonusController.SpawnRandomBonus (transform.position);
+		InitContainer.instance.SpawnController.OnEnemyKilled ();
 
-	internal override void Destroy () {
-		GameController controller = transform.root.GetComponent<GameController> ();
-		if (mySide != Side.Player && myScoreOnKill > 0)
-			controller.AddScore (transform.position, myScoreOnKill);
-		if (myContainBonus) SpawnBonus ();
-		controller.OnEnemyKilled ();
 		base.Destroy ();
 	}
 
@@ -106,11 +116,11 @@ public class BotController : Tank {
 	}
 
 	private void ResetTimeToMove () {
-		myCurTimeToMove = Random.Range (myMinTimeToMove, myMaxTimeToMove);
+		myCurTimeToMove = Random.Range (_MinTimeToMove, _MaxTimeToMove);
 	}
 
 	private void ResetTimeToShoot () {
-		myCurTimeToShoot = Random.Range (myMinTimeToShoot, myMaxTimeToShoot);
+		myCurTimeToShoot = Random.Range (_MinTimeToShoot, _MaxTimeToShoot);
 	}
 
 	public void FreezeBot (bool freezed) {
