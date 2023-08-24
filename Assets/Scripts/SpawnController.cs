@@ -18,7 +18,7 @@ public class SpawnController : MonoBehaviour {
 
 	private int _killedEnemyes = 0;
 	private int _currentEnemyes = 0;
-	private bool _pauseSpawn = false;
+	private bool _freezeEnemyes = false;
 	private bool _baseDestroyed = false;
 
 	public int WavesCount => _wavesCount;
@@ -26,7 +26,10 @@ public class SpawnController : MonoBehaviour {
 
 
 	private void Awake () {
-		
+		foreach (var spawner in _enemySpawners)
+		{
+			spawner.OnEnemySpawned += OnEnemySpawned;
+		}
 	}
 
 	private void OnDestroy () {
@@ -51,15 +54,15 @@ public class SpawnController : MonoBehaviour {
 
 	private IEnumerator StartSpawn () {
 		for (int i = 0; i < _wavesCount; i++) {
+			if (_baseDestroyed)
+				break;
+
+			while (_currentEnemyes >= _maxEnemyes)
+				yield return new WaitForSeconds (1);
+
 			int spawnerNum = Random.Range (0, _enemySpawners.Length);
 			_enemySpawners[spawnerNum].Spawn (_enemyPrefabs[Random.Range (0, _enemyPrefabs.Length)], _tanksEnemyContainer);
 			_currentEnemyes++;
-
-			while (_currentEnemyes >= _maxEnemyes || _pauseSpawn)
-				yield return new WaitForSeconds (1);
-
-			if (_baseDestroyed)
-				break;
 
 			yield return new WaitForSeconds (_timeToEnemySpawn / _dificulty);
 		}
@@ -78,7 +81,7 @@ public class SpawnController : MonoBehaviour {
 	}
 
 	public void FreezeEnemyes () {
-		_pauseSpawn = true;
+		_freezeEnemyes = true;
 
 		for (int i = 0; i < _tanksEnemyContainer.childCount; i++) {
 			BotTank tank = _tanksEnemyContainer.GetChild (i).GetComponent<BotTank> ();
@@ -87,11 +90,19 @@ public class SpawnController : MonoBehaviour {
 	}
 
 	public void UnfreezeEnemyes () {
-		_pauseSpawn = false;
+		_freezeEnemyes = false;
 
 		for (int i = 0; i < _tanksEnemyContainer.childCount; i++) {
 			BotTank tank = _tanksEnemyContainer.GetChild (i).GetComponent<BotTank> ();
 			tank.FreezeBot (false);
+		}
+	}
+
+	private void OnEnemySpawned (Spawner spawner, Tank tank)
+	{
+		if (_freezeEnemyes && tank.Side == Side.Enemy)
+		{
+			((BotTank)tank).FreezeBot (true);
 		}
 	}
 }

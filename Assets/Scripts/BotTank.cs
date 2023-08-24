@@ -1,42 +1,47 @@
 using UnityEngine;
 
 public class BotTank : Tank {
-	[SerializeField] private float _MinTimeToShoot = 1;
-	[SerializeField] private float _MaxTimeToShoot = 4;
-	[SerializeField] private float _MinTimeToMove = 5;
-	[SerializeField] private float _MaxTimeToMove = 10;
-	//[SerializeField] private float myMinTimeOnMove = 4;
-	//[SerializeField] private float myMaxTimeOnMove = 8;
-	[SerializeField] private float _StuckFactor = 0.01f;
-	[SerializeField] private int _ContainBonusChance = 50;
+	[SerializeField] private float _minTimeToShoot = 1;
+	[SerializeField] private float _maxTimeToShoot = 4;
+	[SerializeField] private float _minTimeToMove = 5;
+	[SerializeField] private float _maxTimeToMove = 10;
+	//[SerializeField] private float _minTimeOnMove = 4;
+	//[SerializeField] private float _maxTimeOnMove = 8;
+	[SerializeField] private float _stuckFactor = 0.01f;
+	[SerializeField] private int _containBonusChance = 50;
 
-	private float myCurTimeToShoot = 2;
-	private float myCurTimeToMove = 2;
-	//private float myCurTimeOnMove = 2;
-	private int myScoreOnKill = 100;
+	private float _curTimeToShoot = 2;
+	private float _curTimeToMove = 2;
+	//private float _curTimeOnMove = 2;
+	private int _scoreOnKill = 100;
 
-	private Vector2 myBotMoveDirection;
-	private Vector2 myCurPosition;
-	private Vector2 myPrePosition;
-	private Vector2 myFreezedPosition;
+	private Vector2 _botMoveDirection;
+	private Vector2 _curPosition;
+	private Vector2 _prePosition;
+	private Vector2 _freezedPosition;
 
-	private byte myUpdatesAtStuck = 0;
-	private bool myFreezed = false;
-	private bool myContainBonus = false;
+	private byte _updatesAtStuck = 0;
+	private bool _freezed = false;
+	private bool _containBonus = false;
 
-	public int ScoreOnKill { get => myScoreOnKill; set => myScoreOnKill = value; }
+	private ActionsQueue<object> _actionsQuaye = new ActionsQueue<object> ();
+
+	public int ScoreOnKill { get => _scoreOnKill; set => _scoreOnKill = value; }
 
 	protected override void Start () {
 		base.Start ();
 		RandomMoveDirection ();
-		myContainBonus = Random.Range (0, 100) > _ContainBonusChance ? true : false;
-		myCurPosition = transform.position;
-		myPrePosition = myCurPosition;
-		myFreezedPosition = Vector2.zero;
+		_containBonus = Random.Range (0, 100) > _containBonusChance ? true : false;
+		_curPosition = transform.position;
+		_prePosition = _curPosition;
+		_freezedPosition = Vector2.zero;
+		_actionsQuaye.ExecuteAll ();
 	}
 
 	private void FixedUpdate () {
-		if (myFreezed) return;
+		_actionsQuaye.ExecuteAll ();
+
+		if (_freezed) return;
 
 		CheckShoot ();
 		CheckMove ();
@@ -44,36 +49,36 @@ public class BotTank : Tank {
 	}
 
 	protected override void Update () {
-		_moveDirection = myBotMoveDirection;
+		_moveDirection = _botMoveDirection;
 		base.Update ();
 	}
 
 	private void CheckShoot () {
-		myCurTimeToShoot -= Time.fixedDeltaTime;
+		_curTimeToShoot -= Time.fixedDeltaTime;
 
-		if (myCurTimeToShoot <= 0) {
+		if (_curTimeToShoot <= 0) {
 			ResetTimeToShoot ();
 			Shoot ();
 		}
-		if (myCurTimeToMove <= 0) {
+		if (_curTimeToMove <= 0) {
 			ResetTimeToMove ();
 			RandomMoveDirection ();
 		}
 	}
 
 	private void CheckMove () {
-		myCurTimeToMove -= Time.fixedDeltaTime;
+		_curTimeToMove -= Time.fixedDeltaTime;
 
-		myPrePosition = myCurPosition;
-		myCurPosition = transform.position;
+		_prePosition = _curPosition;
+		_curPosition = transform.position;
 	}
 
 	private void CheckStuck () {
-		float dist = Vector2.Distance (myPrePosition, myCurPosition);
-		if (dist < _StuckFactor) {
-			myUpdatesAtStuck++;
-			if (myUpdatesAtStuck > 10) {
-				myUpdatesAtStuck = 0;
+		float dist = Vector2.Distance (_prePosition, _curPosition);
+		if (dist < _stuckFactor) {
+			_updatesAtStuck++;
+			if (_updatesAtStuck > 10) {
+				_updatesAtStuck = 0;
 				ResetTimeToMove ();
 				ChangeMoveDirection ();
 			}
@@ -81,9 +86,9 @@ public class BotTank : Tank {
 	}
 
 	public override void Destroy () {
-		if (_side != Side.Player && myScoreOnKill > 0)
-			Glabal.PlayerService.AddScore (transform.position, myScoreOnKill);
-		if (myContainBonus) 
+		if (_side != Side.Player && _scoreOnKill > 0)
+			Glabal.PlayerService.AddScore (transform.position, _scoreOnKill);
+		if (_containBonus) 
 			Glabal.BonusController.SpawnRandomBonus (transform.position);
 		Glabal.SpawnController.OnEnemyKilled ();
 
@@ -93,42 +98,48 @@ public class BotTank : Tank {
 	private void RandomMoveDirection () {
 		int x = Random.Range (-1, 1);
 		int y = x == 0 ? Random.Range (-1, 1) : 0;
-		myBotMoveDirection = new Vector2 (x, y);
-		if (myBotMoveDirection == Vector2.zero) RandomMoveDirection ();
+		_botMoveDirection = new Vector2 (x, y);
+		if (_botMoveDirection == Vector2.zero) RandomMoveDirection ();
 	}
 
 	private void ChangeMoveDirection () {
 
-		if (myBotMoveDirection == Vector2.up) {
-			myBotMoveDirection = Random.Range (1, 100) > 50 ? Vector2.right : Vector2.left;
+		if (_botMoveDirection == Vector2.up) {
+			_botMoveDirection = Random.Range (1, 100) > 50 ? Vector2.right : Vector2.left;
 		} else
-		if (myBotMoveDirection == Vector2.left) {
-			myBotMoveDirection = Random.Range (1, 100) > 50 ? Vector2.up : Vector2.down;
+		if (_botMoveDirection == Vector2.left) {
+			_botMoveDirection = Random.Range (1, 100) > 50 ? Vector2.up : Vector2.down;
 		} else
-		if (myBotMoveDirection == Vector2.right) {
-			myBotMoveDirection = Random.Range (1, 100) > 50 ? Vector2.down : Vector2.up;
+		if (_botMoveDirection == Vector2.right) {
+			_botMoveDirection = Random.Range (1, 100) > 50 ? Vector2.down : Vector2.up;
 		} else
-		if (myBotMoveDirection == Vector2.down) {
-			myBotMoveDirection = Random.Range (1, 100) > 50 ? Vector2.left : Vector2.right;
+		if (_botMoveDirection == Vector2.down) {
+			_botMoveDirection = Random.Range (1, 100) > 50 ? Vector2.left : Vector2.right;
 		}
 	}
 
 	private void ResetTimeToMove () {
-		myCurTimeToMove = Random.Range (_MinTimeToMove, _MaxTimeToMove);
+		_curTimeToMove = Random.Range (_minTimeToMove, _maxTimeToMove);
 	}
 
 	private void ResetTimeToShoot () {
-		myCurTimeToShoot = Random.Range (_MinTimeToShoot, _MaxTimeToShoot);
+		_curTimeToShoot = Random.Range (_minTimeToShoot, _maxTimeToShoot);
 	}
 
 	public void FreezeBot (bool freezed) {
-		if (freezed && !myFreezed) {
-			myFreezed = freezed;
-			myFreezedPosition = myBotMoveDirection;
-			myBotMoveDirection = Vector2.zero;
-		} else if (!freezed && myFreezed) {
-			myFreezed = freezed;
-			myBotMoveDirection = myFreezedPosition;
-		}
+		_actionsQuaye.AddAction ((o) => {
+			var freezed = (bool)o;
+			if (freezed && !_freezed)
+			{
+				_freezed = freezed;
+				_freezedPosition = _botMoveDirection;
+				_botMoveDirection = Vector2.zero;
+			}
+			else if (!freezed && _freezed)
+			{
+				_botMoveDirection = _freezedPosition;
+				_freezed = freezed;
+			}
+		}, freezed);
 	}
 }

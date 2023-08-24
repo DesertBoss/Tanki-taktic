@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,6 +9,8 @@ public class Spawner : MonoBehaviour
 	[SerializeField] private GameObject _spawnerLightPrefab;
 	
 	public Side Side { get => _side; internal set => _side = value; }
+
+	public event Action<Spawner, Tank> OnEnemySpawned;
 
 	private void OnDestroy () {
 		_spawnerLightPrefab = null;
@@ -38,7 +41,9 @@ public class Spawner : MonoBehaviour
 		GameObject.Instantiate (_spawnerLightPrefab, transform);
 		yield return new WaitForSeconds (1.3f);
 
-		GameObject.Instantiate (prefab, transform.position, Quaternion.identity, parrent);
+		var tank = GameObject.Instantiate (prefab, transform.position, Quaternion.identity, parrent)
+			.GetComponent<Tank> ();
 		//t.transform.SetParent (_TanksContainer, true);
+		OnEnemySpawned?.Invoke (this, tank);
 	}
 }

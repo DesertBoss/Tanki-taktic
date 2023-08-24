@@ -32,7 +32,7 @@ public class Bullet : MonoBehaviour, IHitable {
 	private void OnTriggerEnter2D (Collider2D collision) {
 		//if (_owner != null && collision.name == _owner.name) return;
 
-		bool hit = true;
+		bool hit = false;
 
 		if (collision.TryGetComponent(out IHitable target))
 			hit = target.OnGetHit (this);
