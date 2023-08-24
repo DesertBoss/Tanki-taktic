@@ -1,22 +1,21 @@
-﻿using UnityEngine;
-
-public class StarEffect : Effect {
-	private PlayerTank myOwner;
+﻿public class StarEffect : Effect {
+	private PlayerTank _owner;
+	private int _addScore = 300;	// Default
 
 	public StarEffect (Tank owner) : base (BonusType.Star) {
-		myOwner = owner as PlayerTank;
+		_owner = owner as PlayerTank;
 	}
 
 	public override void Start () {
-		if (myOwner != null) {
-			myOwner.OnTakeStar ();
-			InitContainer.instance.PlayerService.AddScore (myOwner.transform.position, 300);
+		if (_owner != null) {
+			_owner.OnTakeStar ();
+			Glabal.PlayerService.AddScore (_owner.transform.position, _addScore);
 		}
 
-		myCompleted = true;
+		Complete ();
 	}
 
-	public override void OnDestroy () {
-		myOwner = null;
+	public override void End () {
+		_owner = null;
 	}
 }

@@ -1,80 +1,78 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 
 public class BulletPoolSystem {
-	private Bullet myBulletPrefab;
-	private Transform myBulletsParent;
-	private int myPoolSize;
+	private Bullet _bulletPrefab;
+	private Transform _bulletsParent;
+	private int _poolSize;
 
-	private List<Bullet> myActivePool;
-	private List<Bullet> myReservPool;
+	private List<Bullet> _activePool;
+	private List<Bullet> _reservPool;
 
 	public BulletPoolSystem (Bullet bulletPrefab, Transform bulletsParent, int poolSize) {
-		myBulletPrefab = bulletPrefab;
-		myBulletsParent = bulletsParent;
-		myPoolSize = poolSize;
+		_bulletPrefab = bulletPrefab;
+		_bulletsParent = bulletsParent;
+		_poolSize = poolSize;
 
-		myActivePool = new List<Bullet> (myPoolSize);
-		myReservPool = new List<Bullet> (myPoolSize);
+		_activePool = new List<Bullet> (_poolSize);
+		_reservPool = new List<Bullet> (_poolSize);
 
 		CreatePool ();
 	}
 
 	public void Clear () {
-		myBulletPrefab = null;
-		myBulletsParent = null;
-		myActivePool.Clear ();
-		myReservPool.Clear ();
-		myActivePool = null;
-		myReservPool = null;
+		_bulletPrefab = null;
+		_bulletsParent = null;
+		_activePool.Clear ();
+		_reservPool.Clear ();
+		_activePool = null;
+		_reservPool = null;
 	}
 
 	private void CreatePool () {
-		for (int i = 0; i < myPoolSize; i++) {
-			Bullet obj = GameObject.Instantiate (myBulletPrefab, myBulletsParent);
-			myReservPool.Add (obj);
+		for (int i = 0; i < _poolSize; i++) {
+			Bullet obj = GameObject.Instantiate (_bulletPrefab, _bulletsParent);
+			_reservPool.Add (obj);
 			obj.gameObject.SetActive (false);
 		}
 	}
 
 	public Bullet GetBullet () {
-		//Bullet bullet = myReservPool.Find ((s) => { return !s.gameObject.activeSelf; });
+		//Bullet bullet = _reservPool.Find ((s) => { return !s.gameObject.activeSelf; });
 
-		Bullet bullet = myReservPool[0];
-		myReservPool.Remove (bullet);
-		myActivePool.Add (bullet);
+		Bullet bullet = _reservPool[0];
+		_reservPool.Remove (bullet);
+		_activePool.Add (bullet);
 		bullet.gameObject.SetActive (true);
 		return bullet;
 	}
 
 	public void RevertBullet (Bullet bullet) {
- 		if (myReservPool.Contains (bullet)) return;
+ 		if (_reservPool.Contains (bullet)) return;
 
-		myReservPool.Add (bullet);
-		myActivePool.Remove (bullet);
+		_reservPool.Add (bullet);
+		_activePool.Remove (bullet);
 		bullet.gameObject.SetActive (false);
 	}
 
 	public void ChangePoolSize (int newSize) {
-		var oldPoolSize = myPoolSize;
-		var oldActivePool = myActivePool;
-		var oldReservPool = myReservPool;
+		var oldPoolSize = _poolSize;
+		var oldActivePool = _activePool;
+		var oldReservPool = _reservPool;
 
-		myPoolSize = newSize;
-		myActivePool = new List<Bullet> (myPoolSize);
-		myReservPool = new List<Bullet> (myPoolSize);
+		_poolSize = newSize;
+		_activePool = new List<Bullet> (_poolSize);
+		_reservPool = new List<Bullet> (_poolSize);
 
-		for (int i = 0; i < myPoolSize; i++) {
-			myActivePool.Add (oldActivePool[i]);
-			myReservPool.Add (oldReservPool[i]);
+		for (int i = 0; i < _poolSize; i++) {
+			_activePool.Add (oldActivePool[i]);
+			_reservPool.Add (oldReservPool[i]);
 		}
 
-		for (int i = 0; i < myPoolSize - oldPoolSize; i++) {
-			Bullet obj = GameObject.Instantiate (myBulletPrefab, myBulletsParent);
-			myReservPool.Add (obj);
+		for (int i = 0; i < _poolSize - oldPoolSize; i++) {
+			Bullet obj = GameObject.Instantiate (_bulletPrefab, _bulletsParent);
+			_reservPool.Add (obj);
 			obj.gameObject.SetActive (false);
 		}
 	}

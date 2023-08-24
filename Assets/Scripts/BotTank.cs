@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BotTank : Tank {
@@ -46,7 +44,7 @@ public class BotTank : Tank {
 	}
 
 	protected override void Update () {
-		myMoveDirection = myBotMoveDirection;
+		_moveDirection = myBotMoveDirection;
 		base.Update ();
 	}
 
@@ -83,11 +81,11 @@ public class BotTank : Tank {
 	}
 
 	public override void Destroy () {
-		if (_Side != Side.Player && myScoreOnKill > 0)
-			InitContainer.instance.PlayerService.AddScore (transform.position, myScoreOnKill);
+		if (_side != Side.Player && myScoreOnKill > 0)
+			Glabal.PlayerService.AddScore (transform.position, myScoreOnKill);
 		if (myContainBonus) 
-			InitContainer.instance.BonusController.SpawnRandomBonus (transform.position);
-		InitContainer.instance.SpawnController.OnEnemyKilled ();
+			Glabal.BonusController.SpawnRandomBonus (transform.position);
+		Glabal.SpawnController.OnEnemyKilled ();
 
 		base.Destroy ();
 	}

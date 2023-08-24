@@ -1,29 +1,24 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class Bonus : MonoBehaviour
 {
-	[SerializeField] protected float duration = 10.0f;
+	[SerializeField] protected float _duration = 10.0f;
 
-	protected virtual void Start () {
-
-	}
-
-	protected virtual void Update ()
-    {
-        
-    }
-
-	protected virtual void OnTriggerEnter2D (Collider2D collision) 
+	private void OnTriggerEnter2D (Collider2D collision) 
 	{
-		
+		OnCollided (collision);
 	}
+
+	protected abstract void OnCollided (Collider2D collision);
 
 	protected bool IsPlayer(Collider2D collision, out PlayerTank tank)
 	{
 		return collision.TryGetComponent(out tank);
+	}
+
+	protected void ActivateEffect (Effect effect)
+	{
+		Glabal.BonusController.OnTakeBonus (effect);
 	}
 
 	/*protected void Animation(Action endAnimation)

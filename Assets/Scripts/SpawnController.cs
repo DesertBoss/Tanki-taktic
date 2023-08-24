@@ -6,23 +6,23 @@ using UnityEngine.SceneManagement;
 
 
 public class SpawnController : MonoBehaviour {
-	[SerializeField] private GameObject _PlayerPrefab;
-	[SerializeField] private GameObject[] _EnemyPrefabs;
-	[SerializeField] private Spawner[] _EnemySpawners;
-	[SerializeField] private Spawner _PlayerSpawner;
-	[SerializeField] private Transform _TanksEnemyContainer;
-	[SerializeField] private int _Dificulty = 1;
-	[SerializeField] private int _WavesCount = 20;
-	[SerializeField] private float _TimeToEnemySpawn = 3;
-	[SerializeField] private int _MaxEnemyes = 4;
+	[SerializeField] private GameObject _playerPrefab;
+	[SerializeField] private GameObject[] _enemyPrefabs;
+	[SerializeField] private Spawner[] _enemySpawners;
+	[SerializeField] private Spawner _playerSpawner;
+	[SerializeField] private Transform _tanksEnemyContainer;
+	[SerializeField] private int _dificulty = 1;
+	[SerializeField] private int _wavesCount = 20;
+	[SerializeField] private float _timeToEnemySpawn = 3;
+	[SerializeField] private int _maxEnemyes = 4;
 
-	private int myKilledEnemyes = 0;
-	private int myCurrentEnemyes = 0;
-	private bool myPauseSpawn = false;
-	private bool myBaseDestroyed = false;
+	private int _killedEnemyes = 0;
+	private int _currentEnemyes = 0;
+	private bool _pauseSpawn = false;
+	private bool _baseDestroyed = false;
 
-	public int WavesCount => _WavesCount;
-	public int KilledEnemyes => myKilledEnemyes;
+	public int WavesCount => _wavesCount;
+	public int KilledEnemyes => _killedEnemyes;
 
 
 	private void Awake () {
@@ -30,62 +30,67 @@ public class SpawnController : MonoBehaviour {
 	}
 
 	private void OnDestroy () {
-		_PlayerPrefab = null;
-		_EnemyPrefabs = null;
-		_EnemySpawners = null;
-		_PlayerSpawner = null;
-		_TanksEnemyContainer = null;
+		_playerPrefab = null;
+		_enemyPrefabs = null;
+		_enemySpawners = null;
+		_playerSpawner = null;
+		_tanksEnemyContainer = null;
 	}
 
 	private void Start () {
 		SpawnPlayer ();
 		StartCoroutine (StartSpawn ());
 
-		InitContainer.instance.Base.OnBaseDestroyed += (b) => { myBaseDestroyed = true; };
+		Glabal.MainBase.OnBaseDestroyed += (b) => { _baseDestroyed = true; };
 	}
 
 	public void OnEnemyKilled () {
-		myCurrentEnemyes--;
-		myKilledEnemyes++;
+		_currentEnemyes--;
+		_killedEnemyes++;
 	}
 
 	private IEnumerator StartSpawn () {
-		for (int i = 0; i < _WavesCount; i++) {
-			int spawnerNum = Random.Range (0, _EnemySpawners.Length);
-			_EnemySpawners[spawnerNum].Spawn (_EnemyPrefabs[Random.Range (0, _EnemyPrefabs.Length)], _TanksEnemyContainer);
-			myCurrentEnemyes++;
-			while (myCurrentEnemyes >= _MaxEnemyes || myPauseSpawn) yield return new WaitForSeconds (1);
-			if (myBaseDestroyed) break;
-			yield return new WaitForSeconds (_TimeToEnemySpawn / _Dificulty);
+		for (int i = 0; i < _wavesCount; i++) {
+			int spawnerNum = Random.Range (0, _enemySpawners.Length);
+			_enemySpawners[spawnerNum].Spawn (_enemyPrefabs[Random.Range (0, _enemyPrefabs.Length)], _tanksEnemyContainer);
+			_currentEnemyes++;
+
+			while (_currentEnemyes >= _maxEnemyes || _pauseSpawn)
+				yield return new WaitForSeconds (1);
+
+			if (_baseDestroyed)
+				break;
+
+			yield return new WaitForSeconds (_timeToEnemySpawn / _dificulty);
 		}
 	}
 
 	public void SpawnPlayer () {
-		_PlayerSpawner.Spawn (_PlayerPrefab, transform);
+		_playerSpawner.Spawn (_playerPrefab, transform);
 	}
 
 	public void KillAllEnemyes () {
-		for (int i = 0; i < _TanksEnemyContainer.childCount; i++) {
-			BotTank tank = _TanksEnemyContainer.GetChild (i).GetComponent<BotTank> ();
+		for (int i = 0; i < _tanksEnemyContainer.childCount; i++) {
+			BotTank tank = _tanksEnemyContainer.GetChild (i).GetComponent<BotTank> ();
 			tank.ScoreOnKill = 0;
 			tank.Destroy ();
 		}
 	}
 
 	public void FreezeEnemyes () {
-		myPauseSpawn = true;
+		_pauseSpawn = true;
 
-		for (int i = 0; i < _TanksEnemyContainer.childCount; i++) {
-			BotTank tank = _TanksEnemyContainer.GetChild (i).GetComponent<BotTank> ();
+		for (int i = 0; i < _tanksEnemyContainer.childCount; i++) {
+			BotTank tank = _tanksEnemyContainer.GetChild (i).GetComponent<BotTank> ();
 			tank.FreezeBot (true);
 		}
 	}
 
 	public void UnfreezeEnemyes () {
-		myPauseSpawn = false;
+		_pauseSpawn = false;
 
-		for (int i = 0; i < _TanksEnemyContainer.childCount; i++) {
-			BotTank tank = _TanksEnemyContainer.GetChild (i).GetComponent<BotTank> ();
+		for (int i = 0; i < _tanksEnemyContainer.childCount; i++) {
+			BotTank tank = _tanksEnemyContainer.GetChild (i).GetComponent<BotTank> ();
 			tank.FreezeBot (false);
 		}
 	}

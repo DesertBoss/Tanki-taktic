@@ -4,33 +4,17 @@ using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
-	[SerializeField] private Side mySide = Side.Enemy;
-	[SerializeField] private GameObject mySpawnerLightPrefab;
+	[SerializeField] private Side _side = Side.Enemy;
+	[SerializeField] private GameObject _spawnerLightPrefab;
 	
-	public Side Side { get => mySide; internal set => mySide = value; }
-
-
-	private void Awake () {
-		
-	}
+	public Side Side { get => _side; internal set => _side = value; }
 
 	private void OnDestroy () {
-		mySpawnerLightPrefab = null;
+		_spawnerLightPrefab = null;
 	}
-
-	void Start()
-    {
-		
-	}
-
-    
-    void Update()
-    {
-        
-    }
 
 	public void Spawn (GameObject prefab, Transform parrent) {
-		switch (mySide) {
+		switch (_side) {
 			case Side.Player:
 			StartCoroutine (SpawnPlayer (prefab, parrent));
 			break;
@@ -41,17 +25,17 @@ public class Spawner : MonoBehaviour
 	}
 
 	private IEnumerator SpawnPlayer (GameObject prefab, Transform parrent) {
-		GameObject.Instantiate (mySpawnerLightPrefab, transform);
+		GameObject.Instantiate (_spawnerLightPrefab, transform);
 		yield return new WaitForSeconds (1.3f);
 
 		Tank tank = GameObject.Instantiate (prefab, transform.position, Quaternion.identity, parrent).GetComponent<Tank> ();
 		//t.transform.SetParent (_TanksContainer, true);
 
-		InitContainer.instance.BonusController.OnTakeBonus (new HalmetEffect (tank, 3));
+		Glabal.BonusController.OnTakeBonus (new HalmetEffect (tank, 3));
 	}
 
 	private IEnumerator SpawnEnemy (GameObject prefab, Transform parrent) {
-		GameObject.Instantiate (mySpawnerLightPrefab, transform);
+		GameObject.Instantiate (_spawnerLightPrefab, transform);
 		yield return new WaitForSeconds (1.3f);
 
 		GameObject.Instantiate (prefab, transform.position, Quaternion.identity, parrent);

@@ -1,12 +1,12 @@
 ﻿public abstract class Effect {
-	protected BonusType myBonusType = BonusType.None;
-	protected bool myCompleted = false;
+	protected BonusType _bonusType = BonusType.None;
+	private bool _completed = false;
 
-	public BonusType BonusType { get => myBonusType; }
-	public bool Completed { get => myCompleted; set => myCompleted = value; }
+	public BonusType BonusType => _bonusType;
+	public bool Completed => _completed;
 
 	protected Effect (BonusType type) {
-		myBonusType = type;
+		_bonusType = type;
 	}
 
 	public virtual void Start () {
@@ -17,7 +17,12 @@
 
 	}
 
-	public virtual void OnDestroy () {
+	public virtual void End () {
 
+	}
+
+	public void Complete ()
+	{
+		_completed = true;
 	}
 }

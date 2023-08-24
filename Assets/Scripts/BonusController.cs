@@ -1,23 +1,15 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class BonusController : MonoBehaviour {
-	[SerializeField] GameObject[] _BonusPrefabs;
+	[SerializeField] private GameObject[] _bonusPrefabs;
 
-	List<Effect> myEffects;
-	Effect myEffectInOrder;
+	private List<Effect> _effects;
+	private Effect _effectInOrder;
 
 	void Awake () {
-		myEffects = new List<Effect> ();
-		myEffectInOrder = null;
-	}
-
-	private void OnDestroy () {
-		_BonusPrefabs = null;
-		myEffectInOrder = null;
-		myEffects.Clear ();
-		myEffects = null;
+		_effects = new List<Effect> ();
+		_effectInOrder = null;
 	}
 
 	void Start () {
@@ -33,15 +25,24 @@ public class BonusController : MonoBehaviour {
 
 	}
 
+	private void OnDestroy ()
+	{
+		_bonusPrefabs = null;
+		_effectInOrder = null;
+		_effects.Clear ();
+		_effects = null;
+	}
+
 	private void UpdateEffects () {
-		for (int i = 0; i < myEffects.Count; i++) {
-			Effect effect = myEffects[i];
-			if (myEffectInOrder != null && myEffectInOrder.BonusType == effect.BonusType)
-				effect.Completed = true;
+		for (int i = 0; i < _effects.Count; i++) {
+			Effect effect = _effects[i];
+			if (_effectInOrder != null && _effectInOrder.BonusType == effect.BonusType)
+				effect.Complete ();
 
 			if (effect.Completed) {
-				effect.OnDestroy ();
-				myEffects.RemoveAt (i);
+				effect.End ();
+				_effects.RemoveAt (i);
+				i--;
 				continue;
 			}
 
@@ -50,19 +51,20 @@ public class BonusController : MonoBehaviour {
 	}
 
 	private void CheckOrder () {
-		if (myEffectInOrder != null) {
-			myEffectInOrder.Start ();
-			myEffects.Add (myEffectInOrder);
-			myEffectInOrder = null;
-		}
+		if (_effectInOrder == null)
+			return;
+
+		_effectInOrder.Start ();
+		_effects.Add (_effectInOrder);
+		_effectInOrder = null;
 	}
 
 	public void OnTakeBonus (Effect effect) 
 	{
-		myEffectInOrder = effect;
+		_effectInOrder = effect;
 	}
 
 	public void SpawnRandomBonus (Vector3 position) {
-		Instantiate (_BonusPrefabs[Random.Range (0, _BonusPrefabs.Length)], position, Quaternion.identity, transform);
+		Instantiate (_bonusPrefabs[Random.Range (0, _bonusPrefabs.Length)], position, Quaternion.identity, transform);
 	}
 }

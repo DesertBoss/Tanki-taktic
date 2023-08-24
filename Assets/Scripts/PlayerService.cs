@@ -6,12 +6,12 @@ using UnityEngine.SceneManagement;
 using System;
 
 public class PlayerService : MonoBehaviour {
-	[SerializeField] private int _ExtraLifes = 2;
+	[SerializeField] private int _extraLifes = 2;
 
-	private int myScore = 0;
+	private int _score = 0;
 
-	public int ExtraLifes => _ExtraLifes;
-	public int Score => myScore;
+	public int ExtraLifes => _extraLifes;
+	public int Score => _score;
 
 
 	public event Action <PlayerService> OnEndLifes;
@@ -21,27 +21,27 @@ public class PlayerService : MonoBehaviour {
 	}
 
 	public void AddScore (int score) {
-		myScore += score;
+		_score += score;
 	}
 
 	public void AddScore (Vector2 position, int score) {
 		AddScore (score);
 
-		InitContainer.instance.PlayerInfoPanel.CreateScoreMark (position, score.ToString ());
+		Glabal.PlayerInfoPanel.CreateScoreMark (position, score.ToString ());
 	}
 
 	public void OnPlayerKilled () {
-		_ExtraLifes--;
+		_extraLifes--;
 
 		if (ExtraLifes > 0) {
-			InitContainer.instance.SpawnController.SpawnPlayer ();
+			Glabal.SpawnController.SpawnPlayer ();
 		} else {
 			OnEndLifes?.Invoke (this);
 		}
 	}
 
 	public void OnGetExtraLife () {
-		_ExtraLifes++;
+		_extraLifes++;
 	}
 }
 

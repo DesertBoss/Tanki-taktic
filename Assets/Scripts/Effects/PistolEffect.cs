@@ -1,38 +1,28 @@
-﻿using UnityEngine;
-
-public class PistolEffect : Effect {
-	private PlayerTank myOwner;
-	private BulletPower myInitPower;
-
-	private float myInitTime = 10;
-	private float myRemainingTime;
+﻿public class PistolEffect : TimedEffect {
+	private PlayerTank _owner;
+	private BulletPower _initPower;
 
 	public PistolEffect (Tank owner) : base (BonusType.Star) {
-		myOwner = owner as PlayerTank;
-		myRemainingTime = myInitTime;
+		_owner = owner as PlayerTank;
 	}
 
 	public PistolEffect (Tank owner, float duration) : this (owner) {
-		myRemainingTime = duration;
+		_remainingTime = duration;
 	}
 
 	public override void Start () {
-		if (myOwner == null) return;
+		if (_owner == null)
+			return;
 
-		myInitPower = myOwner.GunPower;
-		myOwner.GunPower = BulletPower.Forced;
+		_initPower = _owner.GunPower;
+		_owner.GunPower = BulletPower.Forced;
 	}
 
-	public override void Update (float delta) {
-		myRemainingTime -= delta;
+	public override void End () {
+		if (_owner == null)
+			return;
 
-		if (myRemainingTime <= 0) myCompleted = true;
-	}
-
-	public override void OnDestroy () {
-		if (myOwner == null) return;
-
-		myOwner.GunPower = myInitPower;
-		myOwner = null;
+		_owner.GunPower = _initPower;
+		_owner = null;
 	}
 }

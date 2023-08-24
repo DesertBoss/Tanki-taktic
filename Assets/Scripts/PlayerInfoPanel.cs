@@ -6,34 +6,34 @@ using UnityEngine.SceneManagement;
 
 
 public class PlayerInfoPanel : MonoBehaviour {
-	[SerializeField] private Text _ScoreText;
-	[SerializeField] private Text _ExtraLifesText;
-	[SerializeField] private Text _EnemyCountText;
-	[SerializeField] private GameObject _GameOverText;
+	[SerializeField] private Text _scoreText;
+	[SerializeField] private Text _extraLifesText;
+	[SerializeField] private Text _enemyCountText;
+	[SerializeField] private GameObject _gameOverText;
 
-	[SerializeField] private GameObject _ScoreGetterPrefab;
+	[SerializeField] private GameObject _scoreGetterPrefab;
 
-	private PlayerService myPlayerService;
-	private SpawnController mySpawnController;
+	private PlayerService _playerService;
+	private SpawnController _spawnController;
 
 	private void Awake () {
-		myPlayerService = InitContainer.instance.PlayerService;
-		mySpawnController = InitContainer.instance.SpawnController;
+		_playerService = Glabal.PlayerService;
+		_spawnController = Glabal.SpawnController;
 	}
 
 	private void OnDestroy () {
-		_ScoreText = null;
-		_ExtraLifesText = null;
-		_EnemyCountText = null;
-		_GameOverText = null;
-		_ScoreGetterPrefab = null;
-		myPlayerService = null;
-		mySpawnController = null;
+		_scoreText = null;
+		_extraLifesText = null;
+		_enemyCountText = null;
+		_gameOverText = null;
+		_scoreGetterPrefab = null;
+		_playerService = null;
+		_spawnController = null;
 	}
 
 	private void Start () {
-		InitContainer.instance.Base.OnBaseDestroyed += (b) => { GameOverLabel (); };
-		InitContainer.instance.PlayerService.OnEndLifes += (s) => { GameOverLabel (); };
+		Glabal.MainBase.OnBaseDestroyed += (b) => { GameOverLabel (); };
+		Glabal.PlayerService.OnEndLifes += (s) => { GameOverLabel (); };
 	}
 
 	void OnGUI () {
@@ -41,17 +41,17 @@ public class PlayerInfoPanel : MonoBehaviour {
 	}
 
 	private void UpdateInfo () {
-		_ScoreText.text = $"Счет: {myPlayerService.Score}";
-		_ExtraLifesText.text = $"Жизней: {myPlayerService.ExtraLifes}";
-		_EnemyCountText.text = $"Врагов: {mySpawnController.WavesCount - mySpawnController.KilledEnemyes}";
+		_scoreText.text = $"Счет: {_playerService.Score}";
+		_extraLifesText.text = $"Жизней: {_playerService.ExtraLifes}";
+		_enemyCountText.text = $"Врагов: {_spawnController.WavesCount - _spawnController.KilledEnemyes}";
 	}
 
 	private void GameOverLabel () {
-		_GameOverText.SetActive (true);
+		_gameOverText.SetActive (true);
 	}
 
 	public void CreateScoreMark (Vector3 position, string text) {
-		Text comonent = GameObject.Instantiate (_ScoreGetterPrefab, position, Quaternion.identity, transform).GetComponentInChildren<Text> ();
+		Text comonent = GameObject.Instantiate (_scoreGetterPrefab, position, Quaternion.identity, transform).GetComponentInChildren<Text> ();
 		comonent.text = text;
 	}
 }
