@@ -9,15 +9,16 @@ public class Glabal : MonoBehaviour {
 	[SerializeField] private SpawnController _spawnController;
 	[SerializeField] private PlayerService _playerService;
 	[SerializeField] private MainBase _mainBase;
-	[SerializeField] private BulletFactory _BulletFactory;
-	[SerializeField] private PlayerInfoPanel _PlayerInfoPanel;
+	[SerializeField] private BulletFactory _bulletFactory;
+	[SerializeField] private PlayerInfoPanel _playerInfoPanel;
+	[SerializeField] private SettingsController _settingsController;
 
 	public static GameZone GameZone => _instance._gameZone;
 	public static BonusController BonusController => _instance._bonusController;
 	public static SpawnController SpawnController => _instance._spawnController;
-	public static BulletFactory BulletFactory => _instance._BulletFactory;
+	public static BulletFactory BulletFactory => _instance._bulletFactory;
 	public static MainBase MainBase => _instance._mainBase;
-	public static PlayerInfoPanel PlayerInfoPanel => _instance._PlayerInfoPanel;
+	public static PlayerInfoPanel PlayerInfoPanel => _instance._playerInfoPanel;
 	public static PlayerService PlayerService => _instance._playerService;
 
 
@@ -33,7 +34,7 @@ public class Glabal : MonoBehaviour {
 		_spawnController = null;
 		_playerService = null;
 		_mainBase = null;
-		_BulletFactory = null;
-		_PlayerInfoPanel = null;
+		_bulletFactory = null;
+		_playerInfoPanel = null;
 	}
 }
