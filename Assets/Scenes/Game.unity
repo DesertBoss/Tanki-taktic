@@ -223,21 +223,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83b1693f4cb1d1b44bcd14618a6bcde6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _PlayerPrefab: {fileID: 8339903225377728254, guid: 2742aae3478fe1044b31a18db57851ec, type: 3}
-  _EnemyPrefabs:
-  - {fileID: 506723414915881081, guid: a09d756c27f57124b831182401e9bf49, type: 3}
-  - {fileID: 7319548414476368764, guid: 23378050d5fb05d468dc8bbb6c017125, type: 3}
+  _playerPrefab: {fileID: 8339903225377728254, guid: 2742aae3478fe1044b31a18db57851ec, type: 3}
+  _enemyPrefabs:
   - {fileID: 3204559459759154357, guid: 7bfb61927d782f34e911d003660ce840, type: 3}
   - {fileID: 7888343182092288572, guid: 080204df7d66c4a4e8502aa0cf329952, type: 3}
-  _EnemySpawners:
+  - {fileID: 506723414915881081, guid: a09d756c27f57124b831182401e9bf49, type: 3}
+  - {fileID: 7319548414476368764, guid: 23378050d5fb05d468dc8bbb6c017125, type: 3}
+  _enemySpawners:
   - {fileID: 2135273860}
   - {fileID: 1140163435}
-  _PlayerSpawner: {fileID: 1431776388}
-  _TanksEnemyContainer: {fileID: 836543201}
-  _Dificulty: 1
-  _WavesCount: 20
-  _TimeToEnemySpawn: 3
-  _MaxEnemyes: 4
+  _playerSpawner: {fileID: 1431776388}
+  _tanksEnemyContainer: {fileID: 836543201}
+  _dificulty: 1
+  _wavesCount: 20
+  _timeToEnemySpawn: 3
+  _maxEnemyes: 4
 --- !u!4 &12699864 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4070580555056950998, guid: 150b721112b176f4abf6de3a35496105, type: 3}
@@ -3717,7 +3717,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bbbe357c61c01e43864925f136033a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _ExtraLifes: 2
+  _extraLifes: 2
 --- !u!4 &347131584 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4070580555056950998, guid: 150b721112b176f4abf6de3a35496105, type: 3}
@@ -4694,14 +4694,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 428379897}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: edabd40575293ac4aa02b12582cef5e3, type: 3}
+  m_Script: {fileID: 11500000, guid: 1a6d9343f9bf8524a954630c59fc21be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _GameZone: {fileID: 949848819}
-  _BonusController: {fileID: 2044530367}
-  _SpawnController: {fileID: 7639699}
-  _PlayerService: {fileID: 345071281}
-  _Base: {fileID: 1534781769}
+  _gameZone: {fileID: 949848819}
+  _bonusController: {fileID: 2044530367}
+  _spawnController: {fileID: 7639699}
+  _playerService: {fileID: 345071281}
+  _mainBase: {fileID: 1534781769}
   _BulletFactory: {fileID: 1866756021}
   _PlayerInfoPanel: {fileID: 1413806892}
 --- !u!1001 &430243608
@@ -13095,11 +13095,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd128d0ac6da62545b460693caccb215, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _ScoreText: {fileID: 1514189835}
-  _ExtraLifesText: {fileID: 431979730}
-  _EnemyCountText: {fileID: 204861451}
-  _GameOverText: {fileID: 1384955620}
-  _ScoreGetterPrefab: {fileID: 5817183124089754041, guid: c6b535d4500b21443936a0094257771d, type: 3}
+  _scoreText: {fileID: 1514189835}
+  _extraLifesText: {fileID: 431979730}
+  _enemyCountText: {fileID: 204861451}
+  _gameOverText: {fileID: 1384955620}
+  _scoreGetterPrefab: {fileID: 5817183124089754041, guid: c6b535d4500b21443936a0094257771d, type: 3}
 --- !u!114 &1413806893
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15393,6 +15393,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1731180329}
     m_Modifications:
+    - target: {fileID: 3399177255958611916, guid: 7fd4cecef4dfd634fbf4487e895c976b, type: 3}
+      propertyPath: _side
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3399177255958611916, guid: 7fd4cecef4dfd634fbf4487e895c976b, type: 3}
       propertyPath: mySide
       value: 0
@@ -18208,9 +18212,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59327c29798828d459c36a64cb6e9c57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _BulletPrefab: {fileID: -794279605100900319, guid: cd4df31772e23424ab75737b21761529, type: 3}
-  _BulletsParent: {fileID: 1720053794}
-  _PoolSize: 50
+  _bulletPrefab: {fileID: -794279605100900319, guid: cd4df31772e23424ab75737b21761529, type: 3}
+  _bulletsParent: {fileID: 1720053794}
+  _poolSize: 50
 --- !u!4 &1866756022
 Transform:
   m_ObjectHideFlags: 0
@@ -19646,14 +19650,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adcbef4a0815a7444bfb669241c78f6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _BonusPrefabs:
-  - {fileID: 4996815283131920151, guid: 1173ae483bf37e04f85178dea158b3ec, type: 3}
+  _bonusPrefabs:
   - {fileID: 703232064516494189, guid: 0648cc3f680c8bb448e6820f5c4d1858, type: 3}
   - {fileID: 5382347792407813951, guid: d400bf933b059284b86ad9890b46a7e7, type: 3}
   - {fileID: 3088684741742587041, guid: f9c3ba065a652c5479d56ead51ccdf88, type: 3}
   - {fileID: 3495625744034710037, guid: e2c324123de4efd46af63c456ec57b99, type: 3}
   - {fileID: 4724804863105994364, guid: e45dd00efdf237448997aa9fa2047836, type: 3}
   - {fileID: 4100915798661240848, guid: 46718d814d297dc4cb5f8a2ebf56fdff, type: 3}
+  - {fileID: 4996815283131920151, guid: 1173ae483bf37e04f85178dea158b3ec, type: 3}
 --- !u!4 &2052773532 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4070580555056950998, guid: 150b721112b176f4abf6de3a35496105, type: 3}
@@ -20891,7 +20895,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7164331557740341592, guid: 8d855027f564bcf42b51a69cfe732434, type: 3}
       propertyPath: m_Name
-      value: Base
+      value: MainBase
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8d855027f564bcf42b51a69cfe732434, type: 3}

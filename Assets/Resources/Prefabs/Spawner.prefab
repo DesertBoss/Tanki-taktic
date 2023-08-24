@@ -43,5 +43,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b137b51a629e7e148b800fb9894142dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mySide: 1
-  mySpawnerLightPrefab: {fileID: 7136646536705098324, guid: 3ec1f84519809494fb6c4cd2244cf21d, type: 3}
+  _side: 1
+  _spawnerLightPrefab: {fileID: 7136646536705098324, guid: 3ec1f84519809494fb6c4cd2244cf21d, type: 3}

@@ -114,15 +114,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99b85bb77e1f75d41a8b6e32897abe84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Health: 1
-  _Speed: 15
-  _SpeedMult: 500
-  _BulletSpeed: 10
-  _BulletSpeedMult: 20
-  _MaxBullets: 1
-  _Side: 1
-  _Gun: {fileID: 3204559460650856566}
-  _ExplosionPrefab: {fileID: 7968321525616445444, guid: 2e46ac480ff56ca43b56b9a99596b28b, type: 3}
+  _health: 1
+  _speed: 10
+  _speedMult: 500
+  _bulletSpeed: 10
+  _bulletSpeedMult: 20
+  _maxBullets: 1
+  _side: 1
+  _gun: {fileID: 3204559460650856566}
+  _explosionPrefab: {fileID: 7968321525616445444, guid: 2e46ac480ff56ca43b56b9a99596b28b, type: 3}
   _MinTimeToShoot: 1
   _MaxTimeToShoot: 4
   _MinTimeToMove: 5
